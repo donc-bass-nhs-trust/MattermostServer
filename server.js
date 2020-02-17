@@ -14,9 +14,11 @@ app.listen(3000, function () {
 
   // E.g users/login appends the access token from the header
   // into the response body.
-  registerCallback("api/v4/users/login", customCallbacks, usersLoginCallback);
-  registerCallback("api/v4/users/me", customCallbacks);
-  registerCallback("api/v4/users/id/teams/id/channels", customCallbacks);
+  registerCallback("api/v4/users/login", usersLoginCallback);
+  registerCallback("api/v4/users/me");
+  registerCallback("api/v4/users/id/teams/id/channels");
+  registerCallback("api/v4/posts");
+  registerCallback("api/v4/channels");
 });
 
 app.use(
@@ -45,7 +47,7 @@ app.post('/', (req, res) => {
     body: body
   }
 
-  var callback = returnData(customCallbacks, pathname, '/');
+  var callback = returnData(callbacks, pathname, '/');
   if (callback === undefined) {
     console.error("Unrecognised API call from path '" + pathname + "'!\nMake sure you have registered every API path with 'registerCallback'.");
     res.send("Unrecognised API call from path '" + pathname + "'!");
@@ -93,10 +95,10 @@ const usersLoginCallback = function(res, err, resp, body) {
   });
 };
 
-const customCallbacks = {};
+const callbacks = {};
 
-function registerCallback(path = "", object = {}, data = defaultRequestCallback) {
-  addDataToObject(data, path, object, '/');
+function registerCallback(path = "", data = defaultRequestCallback) {
+  addDataToObject(data, path, callbacks, '/');
   console.log("Callback registered '" + path +"' => " 
           + ((data !== defaultRequestCallback) ? data.name : "default"));
 }
