@@ -14,11 +14,16 @@ app.listen(3000, function () {
 
   // E.g users/login appends the access token from the header
   // into the response body.
-  registerCallback("api/v4/users/login", usersLoginCallback);
+  registerCallback("api/v4/users");
   registerCallback("api/v4/users/me");
+  registerCallback("api/v4/users/login", usersLoginCallback);
+  registerCallback("api/v4/users/id/tokens");
   registerCallback("api/v4/users/id/teams/id/channels");
+  registerCallback("api/v4/users/email/id");
   registerCallback("api/v4/posts");
   registerCallback("api/v4/channels");
+  registerCallback("api/v4/channels/id/posts");
+  registerCallback("api/v4/teams/id/members");
 });
 
 app.use(
@@ -53,6 +58,8 @@ app.post('/', (req, res) => {
     res.send("Unrecognised API call from path '" + pathname + "'!");
     return;
   }
+
+  console.log("\n(!)\tPath:\t'" + pathname + "'\n\tType:\t" + requestType + "\n\tToken:\t'" + token + "\n\tBody:\t" + body);
 
   switch (requestType) {
     case "post": {
@@ -168,7 +175,7 @@ function returnData(data, path, delim = '.'){
 		//Convert the path into an array of levels
     let levels = path.split(delim);
     for (l in levels) {
-      if (levels[l].length === 26) {
+      if (levels[l].length === 26 || levels[l].includes('@')) {
         levels[l] = "id";
       }
     }
